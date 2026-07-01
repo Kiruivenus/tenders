@@ -315,9 +315,13 @@ app.use((err, req, res, next) => {
 });
 
 // Start listening
-app.listen(PORT, () => {
-    console.log(`==================================================`);
-    console.log(`Tender Submission Portal listening on http://localhost:${PORT}`);
-    console.log(`Press Ctrl+C to terminate server.`);
-    console.log(`==================================================`);
-});
+if (!process.env.VERCEL) {
+    app.listen(PORT, () => {
+        console.log(`==================================================`);
+        console.log(`Tender Submission Portal listening on http://localhost:${PORT}`);
+        console.log(`Press Ctrl+C to terminate server.`);
+        console.log(`==================================================`);
+    });
+}
+
+module.exports = app;
