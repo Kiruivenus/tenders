@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tender Submission Portal</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Load Google Fonts - Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Top Navigation Bar -->
+    <nav class="top-nav">
+        <div class="nav-container">
+            <a href="#" class="brand">
+                <svg class="logo-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                    <polyline points="10 9 9 9 8 9"></polyline>
+                </svg>
+                <span class="brand-text">Tender Portal</span>
+            </a>
+        </div>
+    </nav>
+
+    <!-- Main Content Container -->
+    <main class="main-content">
+        <div class="portal-container">
+            
+            <!-- Success Message Panel (Hidden by default) -->
+            <div id="success-panel" class="success-panel hidden">
+                <div class="success-icon-container">
+                    <svg class="success-icon" width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                </div>
+                <h2>Proposal Submitted Successfully</h2>
+                <p class="success-desc">Your tender submission has been successfully processed and dispatched to our procurement review team. A receipt confirmation has been sent to <strong id="success-email-display">-</strong>.</p>
+                
+                <div class="submission-summary">
+                    <h3>Submission Summary</h3>
+                    <table class="summary-table">
+                        <tr>
+                            <th>Tender Title</th>
+                            <td id="summary-title">-</td>
+                        </tr>
+                        <tr>
+                            <th>Reference Number</th>
+                            <td id="summary-ref" class="ref-code">-</td>
+                        </tr>
+                        <tr>
+                            <th>Category</th>
+                            <td id="summary-category">-</td>
+                        </tr>
+                        <tr>
+                            <th>Deadline</th>
+                            <td id="summary-deadline">-</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="success-actions">
+                    <button type="button" id="btn-submit-another" class="btn btn-secondary">Submit Another Tender</button>
+                </div>
+            </div>
+
+            <!-- Form Card Panel -->
+            <div id="form-panel" class="form-panel">
+                <div class="form-header">
+                    <h1>Submit Tender Proposal</h1>
+                    <p class="form-subtitle">Provide details below to enter your bid. Make sure all required fields (<span class="required-indicator">*</span>) are filled with accurate data.</p>
+                </div>
+
+                <!-- Global Submission Error Message Banner -->
+                <div id="global-error" class="error-banner hidden">
+                    <svg class="error-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="8" x2="12" y2="12"></line>
+                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                    </svg>
+                    <span id="global-error-text">An error occurred while submitting your proposal. Please try again.</span>
+                </div>
+
+                <form id="tender-form" novalidate>
+                    <!-- Row: Full Name & Company Name -->
+                    <div class="form-row">
+                        <div class="form-group col-6">
+                            <label for="fullname">Full Name <span class="required-indicator">*</span></label>
+                            <input type="text" id="fullname" name="fullname" placeholder="e.g. Sarah Jenkins" required autocomplete="name">
+                            <div class="error-message" id="error-fullname"></div>
+                        </div>
+                        <div class="form-group col-6">
+                            <label for="company">Company Name <span class="required-indicator">*</span></label>
+                            <input type="text" id="company" name="company" placeholder="e.g. Apex Solutions Ltd" required autocomplete="organization">
+                            <div class="error-message" id="error-company"></div>
+                        </div>
+                    </div>
+
+                    <!-- Row: Email & Phone -->
+                    <div class="form-row">
+                        <div class="form-group col-6">
+                            <label for="email">Email Address <span class="required-indicator">*</span></label>
+                            <input type="email" id="email" name="email" placeholder="s.jenkins@company.com" required autocomplete="email">
+                            <div class="error-message" id="error-email"></div>
+                        </div>
+                        <div class="form-group col-6">
+                            <label for="phone">Phone Number <span class="required-indicator">*</span></label>
+                            <input type="tel" id="phone" name="phone" placeholder="e.g. +1 555-0199" required autocomplete="tel">
+                            <div class="error-message" id="error-phone"></div>
+                        </div>
+                    </div>
+
+                    <!-- Row: Tender Title & Category Dropdown -->
+                    <div class="form-row">
+                        <div class="form-group col-8">
+                            <label for="title">Tender Title <span class="required-indicator">*</span></label>
+                            <input type="text" id="title" name="title" placeholder="e.g. Supply of Data Center Hardware Infrastructure" required>
+                            <div class="error-message" id="error-title"></div>
+                        </div>
+                        <div class="form-group col-4">
+                            <label for="category">Category <span class="required-indicator">*</span></label>
+                            <div class="select-wrapper">
+                                <select id="category" name="category" required>
+                                    <option value="" disabled selected>Choose a category...</option>
+                                    <option value="IT">IT</option>
+                                    <option value="Construction">Construction</option>
+                                    <option value="Procurement">Procurement</option>
+                                    <option value="Services">Services</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                            <div class="error-message" id="error-category"></div>
+                        </div>
+                    </div>
+
+                    <!-- Row: Budget & Deadline -->
+                    <div class="form-row">
+                        <div class="form-group col-6">
+                            <label for="budget">Budget Range <span class="optional-label">(Optional)</span></label>
+                            <input type="text" id="budget" name="budget" placeholder="e.g. $100k - $250k">
+                            <div class="error-message" id="error-budget"></div>
+                        </div>
+                        <div class="form-group col-6">
+                            <label for="deadline">Deadline <span class="required-indicator">*</span></label>
+                            <input type="date" id="deadline" name="deadline" required>
+                            <div class="error-message" id="error-deadline"></div>
+                        </div>
+                    </div>
+
+                    <!-- Large Textarea: Detailed Description -->
+                    <div class="form-group">
+                        <label for="description">Detailed Description <span class="required-indicator">*</span></label>
+                        <textarea id="description" name="description" rows="7" placeholder="Provide a detailed overview of your proposal, technical specifications, and delivery capability..." required></textarea>
+                        <div class="error-message" id="error-description"></div>
+                    </div>
+
+                    <!-- File Upload Input (PDF, DOCX) -->
+                    <div class="form-group">
+                        <label>Tender Proposal File <span class="required-indicator">*</span> <span class="field-hint">(PDF or DOCX formats, under 10MB)</span></label>
+                        <div class="file-upload-area" id="file-dropzone">
+                            <input type="file" id="tender_file" name="tender_file" accept=".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document" class="file-input" required>
+                            <div class="file-upload-visual">
+                                <svg class="upload-icon" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                    <polyline points="17 8 12 3 7 8"></polyline>
+                                    <line x1="12" y1="3" x2="12" y2="15"></line>
+                                </svg>
+                                <p class="visual-text">Drag and drop file here or <span class="browse-btn">browse files</span></p>
+                                <span class="selected-filename" id="selected-filename">No file selected</span>
+                            </div>
+                        </div>
+                        <div class="error-message" id="error-tender_file"></div>
+                    </div>
+
+                    <!-- Preferred Contact Method (Radios) -->
+                    <div class="form-group">
+                        <label>Preferred Contact Method <span class="required-indicator">*</span></label>
+                        <div class="contact-method-wrapper">
+                            <label class="radio-label">
+                                <input type="radio" name="preferred_contact" value="Email" checked>
+                                <span class="custom-radio"></span>
+                                <span>Email</span>
+                            </label>
+                            <label class="radio-label">
+                                <input type="radio" name="preferred_contact" value="Phone">
+                                <span class="custom-radio"></span>
+                                <span>Phone</span>
+                            </label>
+                            <label class="radio-label">
+                                <input type="radio" name="preferred_contact" value="WhatsApp">
+                                <span class="custom-radio"></span>
+                                <span>WhatsApp</span>
+                            </label>
+                        </div>
+                        <div class="error-message" id="error-preferred_contact"></div>
+                    </div>
+
+                    <!-- Form Submission Actions -->
+                    <div class="form-actions">
+                        <button type="submit" id="btn-submit" class="btn btn-primary">
+                            <span class="btn-text">Submit Proposal</span>
+                            <span class="spinner hidden" id="submit-spinner"></span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Site Footer -->
+    <footer class="site-footer">
+        <div class="footer-container">
+            <div class="footer-company">
+                <strong>Apex Procurement Services Ltd</strong>
+                <p class="copyright">&copy; 2026 Apex Procurement. All rights reserved.</p>
+            </div>
+            <div class="footer-contact">
+                <span class="contact-label">Procurement Inquiries:</span>
+                <a href="mailto:procurement@apex-tenders.com" class="contact-link">procurement@apex-tenders.com</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>
