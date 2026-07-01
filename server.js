@@ -255,8 +255,6 @@ ${description}
                     Our procurement review team will evaluate your proposal and get in touch with you using your preferred contact method (<strong>${preferred_contact}</strong>).
                 </p>
                 
-                <p>If you have any questions, please reply to this email or contact us at <a href="mailto:${process.env.RECEIVER_EMAIL || 'procurement@apex-tenders.com'}">${process.env.RECEIVER_EMAIL || 'procurement@apex-tenders.com'}</a>.</p>
-                
                 <br>
                 <p>Best regards,<br><strong>Apex Procurement Services Ltd</strong></p>
             `;
