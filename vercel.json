@@ -16,24 +16,12 @@
     {
       "src": "portal.js",
       "use": "@vercel/static"
-    },
-    {
-      "src": "request-tender.html",
-      "use": "@vercel/static"
-    },
-    {
-      "src": "request-tender.js",
-      "use": "@vercel/static"
     }
   ],
   "routes": [
     {
       "src": "/submit-tender",
       "dest": "app.js"
-    },
-    {
-      "src": "/request-tender",
-      "dest": "/request-tender.html"
     },
     {
       "src": "/(.*)",
