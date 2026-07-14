@@ -379,10 +379,6 @@ function getProcurementHtml(vars) {
                   <td style="padding: 10px 16px; font-size: 13px; color: #0f172a; border-bottom: 1px solid #f1f5f9;">${vars.budget}</td>
                 </tr>
                 <tr>
-                  <td style="padding: 10px 16px; font-size: 13px; font-weight: 600; color: #64748b; border-bottom: 1px solid #f1f5f9;">Deadline Date</td>
-                  <td style="padding: 10px 16px; font-size: 13px; color: #0f172a; border-bottom: 1px solid #f1f5f9;">${vars.deadline}</td>
-                </tr>
-                <tr>
                   <td style="padding: 10px 16px; font-size: 13px; font-weight: 600; color: #64748b; border-bottom: 1px solid #f1f5f9;">Applicant Name</td>
                   <td style="padding: 10px 16px; font-size: 13px; color: #0f172a; border-bottom: 1px solid #f1f5f9;">${vars.fullname}</td>
                 </tr>
@@ -398,20 +394,10 @@ function getProcurementHtml(vars) {
                   <td style="padding: 10px 16px; font-size: 13px; font-weight: 600; color: #64748b; border-bottom: 1px solid #f1f5f9;">Phone Number</td>
                   <td style="padding: 10px 16px; font-size: 13px; color: #0f172a; border-bottom: 1px solid #f1f5f9;">${vars.phone}</td>
                 </tr>
-                <tr>
-                  <td style="padding: 10px 16px; font-size: 13px; font-weight: 600; color: #64748b; border-bottom: 1px solid #f1f5f9;">Preferred Contact</td>
-                  <td style="padding: 10px 16px; font-size: 13px; color: #0f172a; border-bottom: 1px solid #f1f5f9;">${vars.preferred_contact}</td>
-                </tr>
-                <tr>
-                  <td style="padding: 10px 16px; font-size: 13px; font-weight: 600; color: #64748b; border-bottom-left-radius: 7px;">Tender Document</td>
-                  <td style="padding: 10px 16px; font-size: 13px; color: #0f172a; border-bottom-right-radius: 7px;">${vars.fileStatus}</td>
-                </tr>
               </table>
 
               <h3 style="font-size: 14px; font-weight: 700; color: #1e3a8a; margin: 0 0 10px 0;">Proposal Description</h3>
               <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 16px; font-size: 13px; color: #334155; line-height: 1.6; white-space: pre-wrap;">${vars.description}</div>
-              
-              ${vars.downloadButtonMarkup}
             </td>
           </tr>
           <!-- Footer -->
@@ -445,19 +431,14 @@ Reference ID: ${vars.refCode}
 Tender Title: ${vars.title}
 Category: ${vars.category}
 Budget Range: ${vars.budget}
-Deadline Date: ${vars.deadline}
 Applicant Name: ${vars.fullname}
 Company Name: ${vars.company}
 Email Address: ${vars.email}
 Phone Number: ${vars.phone}
-Preferred Contact: ${vars.preferred_contact}
-Tender Document: ${vars.fileStatus}
 
 PROPOSAL DESCRIPTION:
 --------------------------------------------------
 ${vars.description}
-
-${vars.downloadLinkText}
 
 --------------------------------------------------
 Dola Group Ltd | Website: https://dolagroup.info | Inquiries: tenders@dolagroup.info
@@ -538,14 +519,6 @@ function getApplicantHtml(vars) {
                   <td style="padding: 10px 16px; font-size: 13px; color: #0f172a; border-bottom: 1px solid #f1f5f9;">${vars.submissionDate}</td>
                 </tr>
                 <tr>
-                  <td style="padding: 10px 16px; font-size: 13px; font-weight: 600; color: #64748b; border-bottom: 1px solid #f1f5f9;">Submission Deadline</td>
-                  <td style="padding: 10px 16px; font-size: 13px; color: #0f172a; border-bottom: 1px solid #f1f5f9;">${vars.deadline}</td>
-                </tr>
-                <tr>
-                  <td style="padding: 10px 16px; font-size: 13px; font-weight: 600; color: #64748b; border-bottom: 1px solid #f1f5f9;">Uploaded Document</td>
-                  <td style="padding: 10px 16px; font-size: 13px; color: #0f172a; border-bottom: 1px solid #f1f5f9;">${vars.fileStatus}</td>
-                </tr>
-                <tr>
                   <td style="padding: 10px 16px; font-size: 13px; font-weight: 600; color: #64748b; border-bottom-left-radius: 7px;">Status</td>
                   <td style="padding: 10px 16px; font-size: 13px; font-weight: 700; color: #059669; border-bottom-right-radius: 7px;">✔ Successfully Received</td>
                 </tr>
@@ -557,16 +530,13 @@ function getApplicantHtml(vars) {
                   <td style="padding: 16px 20px;">
                     <h4 style="font-size: 14px; font-weight: 700; color: #1e3a8a; margin: 0 0 12px 0;">What happens next?</h4>
                     <ol style="font-size: 13px; line-height: 1.6; color: #475569; margin: 0; padding-left: 20px;">
-                      <li style="margin-bottom: 8px;"><strong>Secure Storage:</strong> Your proposal files are now stored securely in our document repository and cannot be altered.</li>
-                      <li style="margin-bottom: 8px;"><strong>Evaluation:</strong> Our procurement evaluation committee will review all submissions after the closing deadline.</li>
-                      <li style="margin-bottom: 8px;"><strong>Clarification:</strong> We will contact you using your preferred contact method (<strong>${vars.preferred_contact}</strong>) if our review team requires any clarification.</li>
+                      <li style="margin-bottom: 8px;"><strong>Evaluation:</strong> Our procurement evaluation committee will review all submissions.</li>
+                      <li style="margin-bottom: 8px;"><strong>Clarification:</strong> We will contact you if our review team requires any clarification.</li>
                       <li><strong>Decision:</strong> Formal notifications of award decisions will be distributed after evaluation is completed.</li>
                     </ol>
                   </td>
                 </tr>
               </table>
-              
-              ${vars.downloadButtonMarkup}
             </td>
           </tr>
           <!-- Footer -->
@@ -602,18 +572,13 @@ Reference Number: ${vars.refCode}
 Tender Title: ${vars.title}
 Category: ${vars.category}
 Submission Date: ${vars.submissionDate}
-Submission Deadline: ${vars.deadline}
-Uploaded Document: ${vars.fileStatus}
 Status: Successfully Received
 
 WHAT HAPPENS NEXT?
 --------------------------------------------------
-1. Secure Storage: Your proposal files are now stored securely in our document repository and cannot be altered.
-2. Evaluation: Our procurement evaluation committee will review all submissions after the closing deadline.
-3. Clarification: We will contact you using your preferred contact method (${vars.preferred_contact}) if our review team requires any clarification.
-4. Decision: Formal notifications of award decisions will be distributed after evaluation is completed.
-
-${vars.downloadLinkText}
+1. Evaluation: Our procurement evaluation committee will review all submissions.
+2. Clarification: We will contact you if our review team requires any clarification.
+3. Decision: Formal notifications of award decisions will be distributed after evaluation is completed.
 
 --------------------------------------------------
 Dola Group Ltd | Website: https://dolagroup.info | Inquiries: tenders@dolagroup.info
@@ -624,8 +589,7 @@ This email was automatically generated by the Dola Group Procurement Portal.`;
 // ----------------------------------------------------
 // POST API Endpoint: /submit-tender
 // ----------------------------------------------------
-// ----------------------------------------------------
-app.post('/submit-tender', upload.single('tender_file'), async (req, res) => {
+app.post('/submit-tender', upload.none(), async (req, res) => {
     const deliveryRecord = {
         recipient: '',
         referenceNumber: '',
@@ -643,13 +607,11 @@ app.post('/submit-tender', upload.single('tender_file'), async (req, res) => {
             title,
             category,
             budget,
-            deadline,
-            description,
-            preferred_contact
+            description
         } = req.body;
 
         // Basic server-side validations
-        if (!fullname || !company || !email || !phone || !title || !category || !deadline || !description || !preferred_contact) {
+        if (!fullname || !company || !email || !phone || !title || !category || !description) {
             return res.status(400).json({ success: false, message: 'All required fields must be filled.' });
         }
 
@@ -658,83 +620,10 @@ app.post('/submit-tender', upload.single('tender_file'), async (req, res) => {
             return res.status(400).json({ success: false, message: 'Invalid email address provided.' });
         }
 
-        if (!req.file) {
-            return res.status(400).json({ success: false, message: 'Tender proposal document file is required.' });
-        }
-
         const refCode = generateReference();
-
 
         deliveryRecord.referenceNumber = refCode;
         deliveryRecord.recipient = email;
-
-        // Sanitize filename to prevent directory traversal
-        const sanitizedFilename = sanitizeFilename(req.file.originalname);
-
-        // Handle attachment sizing (5MB threshold logic)
-        let hasLargeAttachment = false;
-        let attachmentUrl = '';
-        const FILE_SIZE_THRESHOLD = 5 * 1024 * 1024; // 5MB
-
-        if (req.file.size > FILE_SIZE_THRESHOLD) {
-            hasLargeAttachment = true;
-            const fileUuid = crypto.randomUUID();
-            const extension = path.extname(sanitizedFilename);
-            const fileId = `${fileUuid}${extension}`;
-            
-            const attachmentPath = path.join(UPLOADS_DIR, fileId);
-            const metaPath = `${attachmentPath}.json`;
-            
-            // Save file and metadata to local uploads directory
-            fs.writeFileSync(attachmentPath, req.file.buffer);
-            fs.writeFileSync(metaPath, JSON.stringify({
-                originalname: req.file.originalname,
-                mimetype: req.file.mimetype,
-                size: req.file.size,
-                uploadedAt: new Date().toISOString()
-            }), 'utf8');
-            
-            // Generate secure HMAC signed URL valid for 7 days
-            const expiresAt = Date.now() + LINK_EXPIRATION_TIME;
-            attachmentUrl = generateSignedUrl(fileId, expiresAt, req);
-            console.log(`[Large attachment stored] File size (${(req.file.size / (1024 * 1024)).toFixed(2)} MB) > 5MB. Signed URL generated: ${attachmentUrl}`);
-        }
-
-        // Setup attachment configurations
-        const mailAttachments = [];
-        let fileStatus = '';
-        let downloadButtonMarkup = '';
-        let downloadLinkText = '';
-        
-        if (hasLargeAttachment) {
-            fileStatus = `Stored Securely (Download link attached below)`;
-            downloadLinkText = `SECURE DOWNLOAD LINK (Expires in 7 days):\n${attachmentUrl}`;
-            downloadButtonMarkup = `
-              <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-top: 24px; margin-bottom: 8px;">
-                <tr>
-                  <td align="center">
-                    <table border="0" cellpadding="0" cellspacing="0" style="margin: 0 auto;">
-                      <tr>
-                        <td align="center" style="background-color: #059669; border-radius: 6px;">
-                          <a href="${attachmentUrl}" target="_blank" style="display: inline-block; padding: 12px 24px; font-size: 14px; font-weight: 700; color: #ffffff; text-decoration: none; border-radius: 6px; border: 1px solid #059669; font-family: sans-serif; letter-spacing: 0.02em;">Download Proposal File (Secure Link)</a>
-                        </td>
-                      </tr>
-                    </table>
-                  </td>
-                </tr>
-                <tr>
-                  <td align="center" style="padding-top: 8px; font-size: 11px; color: #94a3b8;">
-                    Link expires in 7 days. Secured by Dola Group.
-                  </td>
-                </tr>
-              </table>`;
-        } else {
-            fileStatus = `${req.file.originalname} (Attached directly, ${(req.file.size / (1024 * 1024)).toFixed(2)} MB)`;
-            mailAttachments.push({
-                filename: req.file.originalname,
-                content: req.file.buffer
-            });
-        }
 
         // Escape input variables to prevent HTML/XSS injection
         const escapedVars = {
@@ -745,8 +634,6 @@ app.post('/submit-tender', upload.single('tender_file'), async (req, res) => {
             title: escapeHtml(title),
             category: escapeHtml(category),
             budget: budget ? escapeHtml(budget) : 'Not specified',
-            deadline: escapeHtml(deadline),
-            preferred_contact: escapeHtml(preferred_contact),
             description: escapeHtml(description),
             refCode: escapeHtml(refCode),
             submissionDate: new Date().toLocaleDateString('en-US', {
@@ -754,10 +641,7 @@ app.post('/submit-tender', upload.single('tender_file'), async (req, res) => {
                 year: 'numeric',
                 month: 'long',
                 day: 'numeric'
-            }),
-            fileStatus: escapeHtml(fileStatus),
-            downloadButtonMarkup,
-            downloadLinkText
+            })
         };
 
         // Render HTML and plain text bodies
@@ -778,7 +662,6 @@ app.post('/submit-tender', upload.single('tender_file'), async (req, res) => {
             subject: `Tender Submission Receipt - ${title} [${refCode}]`,
             html: procurementHtml,
             text: procurementText,
-            attachments: mailAttachments,
             headers: {
                 'Message-ID': msgIdProcurement,
                 'X-Mailer': 'DolaGroup-Procurement-Mailer/2.0',
@@ -812,7 +695,6 @@ app.post('/submit-tender', upload.single('tender_file'), async (req, res) => {
                 subject: `Tender Submission Confirmation - ${title} [${refCode}]`,
                 html: applicantHtml,
                 text: applicantText,
-                attachments: mailAttachments,
                 headers: {
                     'Message-ID': msgIdApplicant,
                     'X-Mailer': 'DolaGroup-Procurement-Mailer/2.0',

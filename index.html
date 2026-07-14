@@ -75,10 +75,6 @@
                             <th>Category</th>
                             <td id="summary-category">-</td>
                         </tr>
-                        <tr>
-                            <th>Deadline</th>
-                            <td id="summary-deadline">-</td>
-                        </tr>
                     </table>
                 </div>
 
@@ -174,18 +170,11 @@
                         </div>
                     </div>
 
-                    <!-- Row: Budget & Deadline -->
-                    <div class="form-row">
-                        <div class="form-group col-6">
-                            <label for="budget">Budget Range <span class="optional-label">(Optional)</span></label>
-                            <input type="text" id="budget" name="budget" placeholder="e.g. $100k - $250k">
-                            <div class="error-message" id="error-budget"></div>
-                        </div>
-                        <div class="form-group col-6">
-                            <label for="deadline">Deadline <span class="required-indicator">*</span></label>
-                            <input type="date" id="deadline" name="deadline" required>
-                            <div class="error-message" id="error-deadline"></div>
-                        </div>
+                    <!-- Budget Range -->
+                    <div class="form-group">
+                        <label for="budget">Budget Range <span class="optional-label">(Optional)</span></label>
+                        <input type="text" id="budget" name="budget" placeholder="e.g. $100k - $250k">
+                        <div class="error-message" id="error-budget"></div>
                     </div>
 
                     <!-- Large Textarea: Detailed Description -->
@@ -195,46 +184,7 @@
                         <div class="error-message" id="error-description"></div>
                     </div>
 
-                    <!-- File Upload Input (PDF, DOCX) -->
-                    <div class="form-group">
-                        <label>Tender Proposal File <span class="required-indicator">*</span> <span class="field-hint">(PDF or DOCX formats, under 10MB)</span></label>
-                        <div class="file-upload-area" id="file-dropzone">
-                            <input type="file" id="tender_file" name="tender_file" accept=".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document" class="file-input" required>
-                            <div class="file-upload-visual">
-                                <svg class="upload-icon" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                                    <polyline points="17 8 12 3 7 8"></polyline>
-                                    <line x1="12" y1="3" x2="12" y2="15"></line>
-                                </svg>
-                                <p class="visual-text">Drag and drop file here or <span class="browse-btn">browse files</span></p>
-                                <span class="selected-filename" id="selected-filename">No file selected</span>
-                            </div>
-                        </div>
-                        <div class="error-message" id="error-tender_file"></div>
-                    </div>
 
-                    <!-- Preferred Contact Method (Radios) -->
-                    <div class="form-group">
-                        <label>Preferred Contact Method <span class="required-indicator">*</span></label>
-                        <div class="contact-method-wrapper">
-                            <label class="radio-label">
-                                <input type="radio" name="preferred_contact" value="Email" checked>
-                                <span class="custom-radio"></span>
-                                <span>Email</span>
-                            </label>
-                            <label class="radio-label">
-                                <input type="radio" name="preferred_contact" value="Phone">
-                                <span class="custom-radio"></span>
-                                <span>Phone</span>
-                            </label>
-                            <label class="radio-label">
-                                <input type="radio" name="preferred_contact" value="WhatsApp">
-                                <span class="custom-radio"></span>
-                                <span>WhatsApp</span>
-                            </label>
-                        </div>
-                        <div class="error-message" id="error-preferred_contact"></div>
-                    </div>
 
                     <!-- Form Submission Actions -->
                     <div class="form-actions">

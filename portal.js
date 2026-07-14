@@ -1,9 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     // DOM Elements
     const tenderForm = document.getElementById('tender-form');
-    const fileInput = document.getElementById('tender_file');
-    const fileDropzone = document.getElementById('file-dropzone');
-    const selectedFilename = document.getElementById('selected-filename');
     
     const submitBtn = document.getElementById('btn-submit');
     const submitSpinner = document.getElementById('submit-spinner');
@@ -21,61 +18,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const summaryTitle = document.getElementById('summary-title');
     const summaryRef = document.getElementById('summary-ref');
     const summaryCategory = document.getElementById('summary-category');
-    const summaryDeadline = document.getElementById('summary-deadline');
-
-    // ----------------------------------------------------
-    // Drag and Drop File Upload Event Handlers
-    // ----------------------------------------------------
-    ['dragenter', 'dragover'].forEach(eventName => {
-        fileDropzone.addEventListener(eventName, (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            fileDropzone.classList.add('dragover');
-        }, false);
-    });
-
-    ['dragleave', 'drop'].forEach(eventName => {
-        fileDropzone.addEventListener(eventName, (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            fileDropzone.classList.remove('dragover');
-        }, false);
-    });
-
-    fileDropzone.addEventListener('drop', (e) => {
-        const dt = e.dataTransfer;
-        const files = dt.files;
-        
-        if (files.length > 0) {
-            fileInput.files = files;
-            updateFileLabel(files[0]);
-            validateField(fileInput); // Re-run validation on change
-        }
-    });
-
-    fileInput.addEventListener('change', (e) => {
-        if (fileInput.files.length > 0) {
-            updateFileLabel(fileInput.files[0]);
-            validateField(fileInput); // Re-run validation on change
-        } else {
-            selectedFilename.textContent = 'No file selected';
-        }
-    });
-
-    function updateFileLabel(file) {
-        selectedFilename.textContent = `${file.name} (${(file.size / (1024 * 1024)).toFixed(2)} MB)`;
-    }
 
     // ----------------------------------------------------
     // Validation Helpers
     // ----------------------------------------------------
     function showError(inputEl, message) {
-        // Add error class to the input element or its wrapper container
-        let targetEl = inputEl;
-        if (inputEl.id === 'tender_file') {
-            targetEl = fileDropzone;
-        }
-        targetEl.classList.add('field-error');
+        inputEl.classList.add('field-error');
         
         const errorEl = document.getElementById(`error-${inputEl.name || inputEl.id}`);
         if (errorEl) {
@@ -84,11 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function clearError(inputEl) {
-        let targetEl = inputEl;
-        if (inputEl.id === 'tender_file') {
-            targetEl = fileDropzone;
-        }
-        targetEl.classList.remove('field-error');
+        inputEl.classList.remove('field-error');
         
         const errorEl = document.getElementById(`error-${inputEl.name || inputEl.id}`);
         if (errorEl) {
@@ -104,7 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
         clearError(input);
 
         // Required Check
-        if (input.hasAttribute('required') && !value && input.type !== 'file' && input.type !== 'radio') {
+        if (input.hasAttribute('required') && !value) {
             showError(input, 'This field is required.');
             return false;
         }
@@ -146,46 +90,9 @@ document.addEventListener('DOMContentLoaded', () => {
             return false;
         }
 
-        if (id === 'deadline') {
-            const selectedDate = new Date(value);
-            const today = new Date();
-            today.setHours(0, 0, 0, 0); // Reset time for accurate date comparison
-            
-            if (isNaN(selectedDate.getTime())) {
-                showError(input, 'Please select a valid deadline date.');
-                return false;
-            }
-            if (selectedDate < today) {
-                showError(input, 'The deadline cannot be in the past.');
-                return false;
-            }
-        }
-
         if (id === 'description' && value.length < 30) {
             showError(input, 'Please provide a more detailed description (minimum 30 characters).');
             return false;
-        }
-
-        if (id === 'tender_file') {
-            const file = input.files[0];
-            if (!file) {
-                showError(input, 'Please upload your tender proposal document.');
-                return false;
-            }
-            
-            // Check file type
-            const allowedExtensions = /(\.pdf|\.docx)$/i;
-            if (!allowedExtensions.exec(file.name)) {
-                showError(input, 'Unsupported file format. Only PDF and DOCX files are allowed.');
-                return false;
-            }
-            
-            // Check file size (10MB max)
-            const maxSize = 10 * 1024 * 1024; // 10MB
-            if (file.size > maxSize) {
-                showError(input, 'The file size exceeds the 10MB limit. Please compress your document.');
-                return false;
-            }
         }
 
         return true;
@@ -244,7 +151,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const formData = new FormData(tenderForm);
 
         // Determine the API endpoint URL dynamically.
-        // If the frontend is hosted on a static port (e.g. Live Server on 5500), forward requests to the Express port (3000).
         let endpoint = '/submit-tender';
         if (window.location.port && window.location.port !== '3000') {
             endpoint = 'http://localhost:3000/submit-tender';
@@ -267,7 +173,6 @@ document.addEventListener('DOMContentLoaded', () => {
             body: formData
         })
         .then(async response => {
-            // First check response status
             if (!response.ok) {
                 let errMsg = `Server returned status code ${response.status}.`;
                 try {
@@ -285,7 +190,6 @@ document.addEventListener('DOMContentLoaded', () => {
             displayEmail.textContent = formData.get('email');
             summaryTitle.textContent = formData.get('title');
             summaryCategory.textContent = formData.get('category');
-            summaryDeadline.textContent = formData.get('deadline');
             summaryRef.textContent = data.reference || generateRefCode();
 
             // Transition to Success panel
@@ -315,7 +219,6 @@ document.addEventListener('DOMContentLoaded', () => {
     btnSubmitAnother.addEventListener('click', () => {
         // Reset form inputs
         tenderForm.reset();
-        selectedFilename.textContent = 'No file selected';
         
         // Clear validation styles
         formFields.forEach(field => {
