@@ -5,6 +5,49 @@ const path = require('path');
 const fs = require('fs');
 require('dotenv').config();
 
+// Validate required SMTP environment variables
+const requiredEnvVars = ['SMTP_HOST', 'SMTP_PORT', 'SMTP_SECURE', 'SMTP_USER', 'SMTP_PASS', 'RECEIVER_EMAIL'];
+const missingVars = requiredEnvVars.filter(varName => !process.env[varName]);
+
+if (missingVars.length > 0) {
+    const errorMsg = `CRITICAL CONFIGURATION ERROR: Missing required SMTP environment variables: ${missingVars.join(', ')}`;
+    console.error('==================================================');
+    console.error(errorMsg);
+    console.error('Please ensure all required variables are set in your environment or .env file.');
+    console.error('==================================================');
+    if (!process.env.VERCEL) {
+        process.exit(1);
+    } else {
+        throw new Error(errorMsg);
+    }
+}
+
+// Configure the pooled Nodemailer SMTP transporter for Zoho Mail
+const transporter = nodemailer.createTransport({
+    pool: true, // Enable connection pooling
+    host: process.env.SMTP_HOST,
+    port: parseInt(process.env.SMTP_PORT, 10) || 587,
+    secure: process.env.SMTP_SECURE === 'true', // false for STARTTLS (587)
+    requireTLS: true, // Automatically enable requireTLS
+    auth: {
+        user: process.env.SMTP_USER,
+        pass: process.env.SMTP_PASS
+    }
+});
+
+// Verify SMTP connection pool on startup
+transporter.verify((error, success) => {
+    if (error) {
+        console.error('==================================================');
+        console.error('SMTP Connection Validation Failed:');
+        console.error(`- Reason: ${error.message}`);
+        console.error('- Recommended action: Verify SMTP_HOST, SMTP_PORT, SMTP_USER, and SMTP_PASS values.');
+        console.error('==================================================');
+    } else {
+        console.log('SMTP Connection Pool successfully verified and ready to dispatch emails.');
+    }
+});
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -72,44 +115,7 @@ function generateReference() {
     return `APX-2026-${rand}`;
 }
 
-// SMTP Transporter setup
-let transporter;
 
-async function getTransporter() {
-    if (transporter) return transporter;
-
-    // Check if user has configured custom SMTP environment variables
-    if (process.env.SMTP_HOST && process.env.SMTP_USER) {
-        console.log('Using configured custom SMTP server:', process.env.SMTP_HOST);
-        transporter = nodemailer.createTransport({
-            host: process.env.SMTP_HOST,
-            port: parseInt(process.env.SMTP_PORT) || 587,
-            secure: process.env.SMTP_SECURE === 'true', // true for 465, false for other ports
-            auth: {
-                user: process.env.SMTP_USER,
-                pass: process.env.SMTP_PASS
-            }
-        });
-    } else {
-        // Fallback for development: Auto-generate an Ethereal SMTP test account
-        console.log('No SMTP configuration detected. Generating a temporary Ethereal SMTP account...');
-        const testAccount = await nodemailer.createTestAccount();
-        console.log('Ethereal test account generated:');
-        console.log(`- User: ${testAccount.user}`);
-        console.log(`- Pass: ${testAccount.pass}`);
-        
-        transporter = nodemailer.createTransport({
-            host: testAccount.smtp.host,
-            port: testAccount.smtp.port,
-            secure: testAccount.smtp.secure,
-            auth: {
-                user: testAccount.user,
-                pass: testAccount.pass
-            }
-        });
-    }
-    return transporter;
-}
 
 // ----------------------------------------------------
 // POST API Endpoint: /submit-tender
@@ -209,10 +215,9 @@ ${description}
             </p>
         `;
 
-        const mailTransporter = await getTransporter();
         const mailOptions = {
-            from: `"${company} via Dola Group Tender Portal" <${process.env.SMTP_USER || 'tenders@dolagroup.info'}>`,
-            to: process.env.RECEIVER_EMAIL || 'tenders@dolagroup.info',
+            from: `"${company} via Dola Group Tender Portal" <${process.env.SMTP_USER}>`,
+            to: process.env.RECEIVER_EMAIL,
             subject: `[TENDER SUBMISSION] ${title} - ${refCode}`,
             html: emailHTML,
             attachments: [
@@ -225,12 +230,15 @@ ${description}
         };
 
         // Send email to procurement team
-        const info = await mailTransporter.sendMail(mailOptions);
-        console.log(`[Procurement Email Sent] Message ID: ${info.messageId}`);
-        
-        // If Ethereal test account, print preview URL in terminal
-        if (nodemailer.getTestMessageUrl(info)) {
-            console.log(`[Preview Procurement Email] URL: ${nodemailer.getTestMessageUrl(info)}`);
+        try {
+            const info = await transporter.sendMail(mailOptions);
+            console.log(`[SMTP success] Procurement Email Sent successfully. Message ID: ${info.messageId}`);
+        } catch (mailErr) {
+            console.error('[SMTP failure] Failed to dispatch procurement email to team.');
+            console.error(`- Configured Host: ${process.env.SMTP_HOST}`);
+            console.error(`- Destination: ${process.env.RECEIVER_EMAIL}`);
+            console.error(`- Error details: ${mailErr.message}`);
+            throw mailErr; // Re-throw to propagate to outer endpoint catch block
         }
 
         // Send confirmation receipt email to the applicant
@@ -273,7 +281,7 @@ ${description}
             `;
 
             const confirmationOptions = {
-                from: `"Dola Group" <${process.env.SMTP_USER || 'tenders@dolagroup.info'}>`,
+                from: `"Dola Group" <${process.env.SMTP_USER}>`,
                 to: email,
                 subject: `[Tender Submission] Confirmation Receipt - ${title} [${refCode}]`,
                 html: confirmationHTML,
@@ -285,14 +293,13 @@ ${description}
                 ]
             };
 
-            const confirmationInfo = await mailTransporter.sendMail(confirmationOptions);
-            console.log(`[Applicant Confirmation Email Sent] Message ID: ${confirmationInfo.messageId}`);
-            if (nodemailer.getTestMessageUrl(confirmationInfo)) {
-                console.log(`[Preview Confirmation Email] URL: ${nodemailer.getTestMessageUrl(confirmationInfo)}`);
-            }
+            const confirmationInfo = await transporter.sendMail(confirmationOptions);
+            console.log(`[SMTP success] Applicant Confirmation Email Sent successfully. Message ID: ${confirmationInfo.messageId}`);
         } catch (confirmErr) {
             // Log but don't fail the primary transaction if the applicant's confirmation bounces
-            console.error('Failed to send confirmation email to applicant:', confirmErr);
+            console.error('[SMTP failure] Failed to dispatch confirmation email to applicant.');
+            console.error(`- Recipient Email: ${email}`);
+            console.error(`- Error details: ${confirmErr.message}`);
         }
 
         // Return successful response to frontend
