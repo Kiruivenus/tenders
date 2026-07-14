@@ -147,27 +147,95 @@
                         </div>
                     </div>
 
-                    <!-- Row: Tender Title & Category Dropdown -->
-                    <div class="form-row">
-                        <div class="form-group col-8">
-                            <label for="title">Tender Title <span class="required-indicator">*</span></label>
-                            <input type="text" id="title" name="title" placeholder="e.g. Supply of Data Center Hardware Infrastructure" required>
-                            <div class="error-message" id="error-title"></div>
+                    <!-- Tender Title -->
+                    <div class="form-group">
+                        <label for="title">Tender Title <span class="required-indicator">*</span></label>
+                        <input type="text" id="title" name="title" placeholder="e.g. Supply of Data Center Hardware Infrastructure" required>
+                        <div class="error-message" id="error-title"></div>
+                    </div>
+
+                    <!-- Category (Checkboxes) -->
+                    <div class="form-group">
+                        <label>Categories <span class="required-indicator">*</span> <span class="field-hint">(Select all that apply)</span></label>
+                        <div class="checkbox-grid" id="category-grid">
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="category" value="IT">
+                                <span>IT</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="category" value="Construction">
+                                <span>Construction</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="category" value="Supply and delivery of maize">
+                                <span>Supply and delivery of maize</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="category" value="Supply and delivery of wheat">
+                                <span>Supply and delivery of wheat</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="category" value="Supply and delivery of oat millet">
+                                <span>Supply and delivery of oat millet</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="category" value="Electrical fittings and maintenance">
+                                <span>Electrical fittings and maintenance</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="category" value="Masonry">
+                                <span>Masonry</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="category" value="Carpentry">
+                                <span>Carpentry</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="category" value="Painting">
+                                <span>Painting</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="category" value="Welding">
+                                <span>Welding</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="category" value="CCTV installation and maintenance">
+                                <span>CCTV installation and maintenance</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="category" value="Provision of cleaning services and equipment">
+                                <span>Provision of cleaning services and equipment</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="category" value="Provision of security services">
+                                <span>Provision of security services</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="category" value="Office stationery">
+                                <span>Office stationery</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="category" value="Computer accessories">
+                                <span>Computer accessories</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="category" value="Furniture">
+                                <span>Furniture</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="category" value="Fire fighting equipment">
+                                <span>Fire fighting equipment</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="category" value="Overalls and safety wear">
+                                <span>Overalls and safety wear</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="category" value="Other">
+                                <span>Other</span>
+                            </label>
                         </div>
-                        <div class="form-group col-4">
-                            <label for="category">Category <span class="required-indicator">*</span></label>
-                            <div class="select-wrapper">
-                                <select id="category" name="category" required>
-                                    <option value="" disabled selected>Choose a category...</option>
-                                    <option value="IT">IT</option>
-                                    <option value="Construction">Construction</option>
-                                    <option value="Procurement">Procurement</option>
-                                    <option value="Services">Services</option>
-                                    <option value="Other">Other</option>
-                                </select>
-                            </div>
-                            <div class="error-message" id="error-category"></div>
-                        </div>
+                        <div class="error-message" id="error-category"></div>
                     </div>
 
                     <!-- Budget Range -->

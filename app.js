@@ -610,8 +610,16 @@ app.post('/submit-tender', upload.none(), async (req, res) => {
             description
         } = req.body;
 
+        // Parse category dynamically if it is an array or string
+        let formattedCategory = '';
+        if (Array.isArray(category)) {
+            formattedCategory = category.join(', ');
+        } else if (typeof category === 'string') {
+            formattedCategory = category;
+        }
+
         // Basic server-side validations
-        if (!fullname || !company || !email || !phone || !title || !category || !description) {
+        if (!fullname || !company || !email || !phone || !title || !formattedCategory || !description) {
             return res.status(400).json({ success: false, message: 'All required fields must be filled.' });
         }
 
@@ -632,7 +640,7 @@ app.post('/submit-tender', upload.none(), async (req, res) => {
             email: escapeHtml(email),
             phone: escapeHtml(phone),
             title: escapeHtml(title),
-            category: escapeHtml(category),
+            category: escapeHtml(formattedCategory),
             budget: budget ? escapeHtml(budget) : 'Not specified',
             description: escapeHtml(description),
             refCode: escapeHtml(refCode),

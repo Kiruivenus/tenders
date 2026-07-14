@@ -85,11 +85,6 @@ document.addEventListener('DOMContentLoaded', () => {
             return false;
         }
 
-        if (id === 'category' && !value) {
-            showError(input, 'Please select a tender category.');
-            return false;
-        }
-
         if (id === 'description' && value.length < 30) {
             showError(input, 'Please provide a more detailed description (minimum 30 characters).');
             return false;
@@ -98,10 +93,36 @@ document.addEventListener('DOMContentLoaded', () => {
         return true;
     }
 
+    function validateCategoryGroup() {
+        const checkedBoxes = Array.from(tenderForm.querySelectorAll('input[name="category"]:checked'));
+        const errorEl = document.getElementById('error-category');
+        const gridEl = document.getElementById('category-grid');
+        
+        if (checkedBoxes.length === 0) {
+            gridEl.classList.add('field-error');
+            if (errorEl) {
+                errorEl.textContent = 'Please select at least one category.';
+            }
+            return false;
+        } else {
+            gridEl.classList.remove('field-error');
+            if (errorEl) {
+                errorEl.textContent = '';
+            }
+            return true;
+        }
+    }
+
     // Live validation feedback on blur
-    const formFields = tenderForm.querySelectorAll('input:not([type="radio"]), select, textarea');
+    const formFields = tenderForm.querySelectorAll('input:not([type="radio"]):not([type="checkbox"]), select, textarea');
     formFields.forEach(field => {
         field.addEventListener('blur', () => validateField(field));
+    });
+
+    // Bind change listeners to category checkboxes for real-time validation feedback
+    const categoryCheckboxes = tenderForm.querySelectorAll('input[name="category"]');
+    categoryCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', () => validateCategoryGroup());
     });
 
     // Generate readable receipt reference ID
@@ -135,8 +156,18 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
+        // Validate category checkbox group
+        const isCategoryValid = validateCategoryGroup();
+        if (!isCategoryValid) {
+            isValid = false;
+            if (!firstInvalidField) {
+                firstInvalidField = document.getElementById('category-grid');
+            }
+        }
+
         if (!isValid) {
             if (firstInvalidField) {
+                firstInvalidField.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 firstInvalidField.focus();
             }
             return;
@@ -189,7 +220,11 @@ document.addEventListener('DOMContentLoaded', () => {
             // Success response handling
             displayEmail.textContent = formData.get('email');
             summaryTitle.textContent = formData.get('title');
-            summaryCategory.textContent = formData.get('category');
+            
+            // Join checked categories as comma-separated string
+            const checkedCats = Array.from(tenderForm.querySelectorAll('input[name="category"]:checked'))
+                                     .map(cb => cb.value);
+            summaryCategory.textContent = checkedCats.join(', ');
             summaryRef.textContent = data.reference || generateRefCode();
 
             // Transition to Success panel
@@ -224,6 +259,13 @@ document.addEventListener('DOMContentLoaded', () => {
         formFields.forEach(field => {
             clearError(field);
         });
+        
+        document.getElementById('category-grid').classList.remove('field-error');
+        const categoryError = document.getElementById('error-category');
+        if (categoryError) {
+            categoryError.textContent = '';
+        }
+        
         globalError.classList.add('hidden');
 
         // Transition back to form
