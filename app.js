@@ -104,12 +104,25 @@ app.use((req, res, next) => {
 
 // Normalize paths for subdirectory hosting on cPanel (e.g., /tenders/style.css -> /style.css)
 app.use((req, res, next) => {
-    const knownRoutes = ['/submit-tender', '/index.html', '/style.css', '/portal.js', '/proposal.docx'];
+    const knownRoutes = [
+        '/submit-tender', 
+        '/index.html', 
+        '/style.css', 
+        '/portal.js', 
+        '/proposal.docx', 
+        '/request-tender', 
+        '/request-tender.html', 
+        '/request-tender.js'
+    ];
     const cleanPath = req.path.replace(/\/$/, '');
     
     const matchedRoute = knownRoutes.find(route => req.path.endsWith(route));
     if (matchedRoute) {
-        req.url = matchedRoute;
+        if (matchedRoute === '/request-tender') {
+            req.url = '/request-tender.html';
+        } else {
+            req.url = matchedRoute;
+        }
     } else if (cleanPath === '' || !cleanPath.includes('.')) {
         req.url = '/index.html';
     }
