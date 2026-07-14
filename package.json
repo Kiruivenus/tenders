@@ -2,10 +2,10 @@
   "name": "tender-submission-portal",
   "version": "1.0.0",
   "description": "Clean, human-coded tender submission portal with Node.js SMTP backend integration",
-  "main": "server.js",
+  "main": "app.js",
   "scripts": {
-    "start": "node server.js",
-    "dev": "node --watch server.js"
+    "start": "node app.js",
+    "dev": "node --watch app.js"
   },
   "dependencies": {
     "dotenv": "^16.4.5",

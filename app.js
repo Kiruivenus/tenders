@@ -1,321 +1,338 @@
-document.addEventListener('DOMContentLoaded', () => {
-    // DOM Elements
-    const tenderForm = document.getElementById('tender-form');
-    const fileInput = document.getElementById('tender_file');
-    const fileDropzone = document.getElementById('file-dropzone');
-    const selectedFilename = document.getElementById('selected-filename');
-    
-    const submitBtn = document.getElementById('btn-submit');
-    const submitSpinner = document.getElementById('submit-spinner');
-    const submitBtnText = submitBtn.querySelector('.btn-text');
-    
-    const globalError = document.getElementById('global-error');
-    const globalErrorText = document.getElementById('global-error-text');
-    
-    const formPanel = document.getElementById('form-panel');
-    const successPanel = document.getElementById('success-panel');
-    const btnSubmitAnother = document.getElementById('btn-submit-another');
-    
-    // Success Summary Displays
-    const displayEmail = document.getElementById('success-email-display');
-    const summaryTitle = document.getElementById('summary-title');
-    const summaryRef = document.getElementById('summary-ref');
-    const summaryCategory = document.getElementById('summary-category');
-    const summaryDeadline = document.getElementById('summary-deadline');
+const express = require('express');
+const multer = require('multer');
+const nodemailer = require('nodemailer');
+const path = require('path');
+const fs = require('fs');
+require('dotenv').config();
 
-    // ----------------------------------------------------
-    // Drag and Drop File Upload Event Handlers
-    // ----------------------------------------------------
-    ['dragenter', 'dragover'].forEach(eventName => {
-        fileDropzone.addEventListener(eventName, (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            fileDropzone.classList.add('dragover');
-        }, false);
-    });
+const app = express();
+const PORT = process.env.PORT || 3000;
 
-    ['dragleave', 'drop'].forEach(eventName => {
-        fileDropzone.addEventListener(eventName, (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            fileDropzone.classList.remove('dragover');
-        }, false);
-    });
-
-    fileDropzone.addEventListener('drop', (e) => {
-        const dt = e.dataTransfer;
-        const files = dt.files;
-        
-        if (files.length > 0) {
-            fileInput.files = files;
-            updateFileLabel(files[0]);
-            validateField(fileInput); // Re-run validation on change
-        }
-    });
-
-    fileInput.addEventListener('change', (e) => {
-        if (fileInput.files.length > 0) {
-            updateFileLabel(fileInput.files[0]);
-            validateField(fileInput); // Re-run validation on change
-        } else {
-            selectedFilename.textContent = 'No file selected';
-        }
-    });
-
-    function updateFileLabel(file) {
-        selectedFilename.textContent = `${file.name} (${(file.size / (1024 * 1024)).toFixed(2)} MB)`;
+// Enable CORS middleware to support clients running on other ports (e.g. Live Server on 5500)
+app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+    res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+    if (req.method === 'OPTIONS') {
+        return res.sendStatus(200);
     }
-
-    // ----------------------------------------------------
-    // Validation Helpers
-    // ----------------------------------------------------
-    function showError(inputEl, message) {
-        // Add error class to the input element or its wrapper container
-        let targetEl = inputEl;
-        if (inputEl.id === 'tender_file') {
-            targetEl = fileDropzone;
-        }
-        targetEl.classList.add('field-error');
-        
-        const errorEl = document.getElementById(`error-${inputEl.name || inputEl.id}`);
-        if (errorEl) {
-            errorEl.textContent = message;
-        }
-    }
-
-    function clearError(inputEl) {
-        let targetEl = inputEl;
-        if (inputEl.id === 'tender_file') {
-            targetEl = fileDropzone;
-        }
-        targetEl.classList.remove('field-error');
-        
-        const errorEl = document.getElementById(`error-${inputEl.name || inputEl.id}`);
-        if (errorEl) {
-            errorEl.textContent = '';
-        }
-    }
-
-    function validateField(input) {
-        const value = input.value.trim();
-        const id = input.id;
-
-        // Clear previous error
-        clearError(input);
-
-        // Required Check
-        if (input.hasAttribute('required') && !value && input.type !== 'file' && input.type !== 'radio') {
-            showError(input, 'This field is required.');
-            return false;
-        }
-
-        // Field Specific Validations
-        if (id === 'fullname' && value.length < 3) {
-            showError(input, 'Please enter your full name (minimum 3 characters).');
-            return false;
-        }
-
-        if (id === 'company' && value.length < 2) {
-            showError(input, 'Please enter a valid company name.');
-            return false;
-        }
-
-        if (id === 'email') {
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!emailRegex.test(value)) {
-                showError(input, 'Please enter a valid email address (e.g. name@domain.com).');
-                return false;
-            }
-        }
-
-        if (id === 'phone') {
-            const phoneClean = value.replace(/[^0-9+()-\s]/g, '');
-            if (phoneClean.length < 7) {
-                showError(input, 'Please enter a valid phone number (minimum 7 digits).');
-                return false;
-            }
-        }
-
-        if (id === 'title' && value.length < 8) {
-            showError(input, 'Tender title should be at least 8 characters long.');
-            return false;
-        }
-
-        if (id === 'category' && !value) {
-            showError(input, 'Please select a tender category.');
-            return false;
-        }
-
-        if (id === 'deadline') {
-            const selectedDate = new Date(value);
-            const today = new Date();
-            today.setHours(0, 0, 0, 0); // Reset time for accurate date comparison
-            
-            if (isNaN(selectedDate.getTime())) {
-                showError(input, 'Please select a valid deadline date.');
-                return false;
-            }
-            if (selectedDate < today) {
-                showError(input, 'The deadline cannot be in the past.');
-                return false;
-            }
-        }
-
-        if (id === 'description' && value.length < 30) {
-            showError(input, 'Please provide a more detailed description (minimum 30 characters).');
-            return false;
-        }
-
-        if (id === 'tender_file') {
-            const file = input.files[0];
-            if (!file) {
-                showError(input, 'Please upload your tender proposal document.');
-                return false;
-            }
-            
-            // Check file type
-            const allowedExtensions = /(\.pdf|\.docx)$/i;
-            if (!allowedExtensions.exec(file.name)) {
-                showError(input, 'Unsupported file format. Only PDF and DOCX files are allowed.');
-                return false;
-            }
-            
-            // Check file size (10MB max)
-            const maxSize = 10 * 1024 * 1024; // 10MB
-            if (file.size > maxSize) {
-                showError(input, 'The file size exceeds the 10MB limit. Please compress your document.');
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    // Live validation feedback on blur
-    const formFields = tenderForm.querySelectorAll('input:not([type="radio"]), select, textarea');
-    formFields.forEach(field => {
-        field.addEventListener('blur', () => validateField(field));
-    });
-
-    // Generate readable receipt reference ID
-    function generateRefCode() {
-        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-        let randStr = '';
-        for (let i = 0; i < 6; i++) {
-            randStr += chars.charAt(Math.floor(Math.random() * chars.length));
-        }
-        return `APX-2026-${randStr}`;
-    }
-
-    // ----------------------------------------------------
-    // Form Submission Handling
-    // ----------------------------------------------------
-    tenderForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        globalError.classList.add('hidden');
-
-        // Validate all fields
-        let isValid = true;
-        let firstInvalidField = null;
-
-        formFields.forEach(field => {
-            const fieldValid = validateField(field);
-            if (!fieldValid) {
-                isValid = false;
-                if (!firstInvalidField) {
-                    firstInvalidField = field;
-                }
-            }
-        });
-
-        if (!isValid) {
-            if (firstInvalidField) {
-                firstInvalidField.focus();
-            }
-            return;
-        }
-
-        // Set Loading State UI
-        submitBtn.disabled = true;
-        submitSpinner.classList.remove('hidden');
-        submitBtnText.textContent = 'Submitting Proposal...';
-
-        // Prepare Form Data payload
-        const formData = new FormData(tenderForm);
-
-        // Determine the API endpoint URL dynamically.
-        // If the frontend is hosted on a static port (e.g. Live Server on 5500), forward requests to the Express port (3000).
-        const endpoint = window.location.port && window.location.port !== '3000'
-            ? 'http://localhost:3000/submit-tender'
-            : '/submit-tender';
-
-        // Perform Submit Fetch Request
-        fetch(endpoint, {
-            method: 'POST',
-            body: formData
-        })
-        .then(async response => {
-            // First check response status
-            if (!response.ok) {
-                let errMsg = `Server returned status code ${response.status}.`;
-                try {
-                    const errorJson = await response.json();
-                    if (errorJson && errorJson.message) {
-                        errMsg = errorJson.message;
-                    }
-                } catch(e) {}
-                throw new Error(errMsg);
-            }
-            return response.json();
-        })
-        .then(data => {
-            // Success response handling
-            displayEmail.textContent = formData.get('email');
-            summaryTitle.textContent = formData.get('title');
-            summaryCategory.textContent = formData.get('category');
-            summaryDeadline.textContent = formData.get('deadline');
-            summaryRef.textContent = data.reference || generateRefCode();
-
-            // Transition to Success panel
-            formPanel.classList.add('hidden');
-            successPanel.classList.remove('hidden');
-            
-            // Scroll to the top of success card
-            successPanel.scrollIntoView({ behavior: 'smooth' });
-        })
-        .catch(error => {
-            console.error('Submission Error:', error);
-            globalErrorText.textContent = `Submission failed: ${error.message || 'Please check your connection and try again.'}`;
-            globalError.classList.remove('hidden');
-            globalError.scrollIntoView({ behavior: 'smooth' });
-        })
-        .finally(() => {
-            // Reset Loading State UI
-            submitBtn.disabled = false;
-            submitSpinner.classList.add('hidden');
-            submitBtnText.textContent = 'Submit Proposal';
-        });
-    });
-
-    // ----------------------------------------------------
-    // Reset / Submit Another Proposal Action
-    // ----------------------------------------------------
-    btnSubmitAnother.addEventListener('click', () => {
-        // Reset form inputs
-        tenderForm.reset();
-        selectedFilename.textContent = 'No file selected';
-        
-        // Clear validation styles
-        formFields.forEach(field => {
-            clearError(field);
-        });
-        globalError.classList.add('hidden');
-
-        // Transition back to form
-        successPanel.classList.add('hidden');
-        formPanel.classList.remove('hidden');
-        
-        // Scroll to form header
-        formPanel.scrollIntoView({ behavior: 'smooth' });
-    });
+    next();
 });
+
+// Normalize paths for subdirectory hosting on cPanel (e.g., /tenders/style.css -> /style.css)
+app.use((req, res, next) => {
+    const knownRoutes = ['/submit-tender', '/index.html', '/style.css', '/portal.js', '/proposal.docx'];
+    const cleanPath = req.path.replace(/\/$/, '');
+    
+    const matchedRoute = knownRoutes.find(route => req.path.endsWith(route));
+    if (matchedRoute) {
+        req.url = matchedRoute;
+    } else if (cleanPath === '' || !cleanPath.includes('.')) {
+        req.url = '/index.html';
+    }
+    next();
+});
+
+// Setup Multer to store uploaded files in memory
+// This avoids writing temp files to disk, allowing direct SMTP streaming
+const storage = multer.memoryStorage();
+const upload = multer({
+    storage: storage,
+    limits: {
+        fileSize: 10 * 1024 * 1024 // 10MB limit
+    },
+    fileFilter: (req, file, cb) => {
+        const allowedExtensions = /pdf|docx/i;
+        const extName = allowedExtensions.test(path.extname(file.originalname));
+        
+        // Mimetypes validation (PDF & Word DOCX)
+        const allowedMimeTypes = [
+            'application/pdf',
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+        ];
+        const mimeTypeValid = allowedMimeTypes.includes(file.mimetype);
+
+        if (extName && mimeTypeValid) {
+            return cb(null, true);
+        }
+        cb(new Error('Only PDF and DOCX documents are allowed.'));
+    }
+});
+
+// Serve static web files from the current folder (index.html, style.css, portal.js)
+app.use(express.static(path.join(__dirname)));
+
+// Helper to generate reference ID
+function generateReference() {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let rand = '';
+    for (let i = 0; i < 6; i++) {
+        rand += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return `APX-2026-${rand}`;
+}
+
+// SMTP Transporter setup
+let transporter;
+
+async function getTransporter() {
+    if (transporter) return transporter;
+
+    // Check if user has configured custom SMTP environment variables
+    if (process.env.SMTP_HOST && process.env.SMTP_USER) {
+        console.log('Using configured custom SMTP server:', process.env.SMTP_HOST);
+        transporter = nodemailer.createTransport({
+            host: process.env.SMTP_HOST,
+            port: parseInt(process.env.SMTP_PORT) || 587,
+            secure: process.env.SMTP_SECURE === 'true', // true for 465, false for other ports
+            auth: {
+                user: process.env.SMTP_USER,
+                pass: process.env.SMTP_PASS
+            }
+        });
+    } else {
+        // Fallback for development: Auto-generate an Ethereal SMTP test account
+        console.log('No SMTP configuration detected. Generating a temporary Ethereal SMTP account...');
+        const testAccount = await nodemailer.createTestAccount();
+        console.log('Ethereal test account generated:');
+        console.log(`- User: ${testAccount.user}`);
+        console.log(`- Pass: ${testAccount.pass}`);
+        
+        transporter = nodemailer.createTransport({
+            host: testAccount.smtp.host,
+            port: testAccount.smtp.port,
+            secure: testAccount.smtp.secure,
+            auth: {
+                user: testAccount.user,
+                pass: testAccount.pass
+            }
+        });
+    }
+    return transporter;
+}
+
+// ----------------------------------------------------
+// POST API Endpoint: /submit-tender
+// ----------------------------------------------------
+app.post('/submit-tender', upload.single('tender_file'), async (req, res) => {
+    try {
+        const {
+            fullname,
+            company,
+            email,
+            phone,
+            title,
+            category,
+            budget,
+            deadline,
+            description,
+            preferred_contact
+        } = req.body;
+
+        // Basic server-side validations
+        if (!fullname || !company || !email || !phone || !title || !category || !deadline || !description || !preferred_contact) {
+            return res.status(400).json({ success: false, message: 'All required fields must be filled.' });
+        }
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            return res.status(400).json({ success: false, message: 'Invalid email address provided.' });
+        }
+
+        if (!req.file) {
+            return res.status(400).json({ success: false, message: 'Tender proposal document file is required.' });
+        }
+
+        const refCode = generateReference();
+
+        // Build HTML formatted email body
+        const emailHTML = `
+            <h2>New Tender Proposal Submission</h2>
+            <p>A new tender proposal has been submitted through the portal.</p>
+            
+            <table border="1" cellpadding="6" cellspacing="0" style="border-collapse: collapse; border-color: #E2E8F0; width: 100%; max-width: 600px;">
+                <tr style="background-color: #F8FAFC;">
+                    <th colspan="2" style="text-align: left; font-size: 1.1em; color: #0B1F3B; padding: 10px;">Submission Details</th>
+                </tr>
+                <tr>
+                    <td style="width: 35%; font-weight: bold;">Reference ID:</td>
+                    <td style="font-family: monospace; font-weight: bold; color: #0B1F3B;">${refCode}</td>
+                </tr>
+                <tr>
+                    <td style="font-weight: bold;">Tender Title:</td>
+                    <td>${title}</td>
+                </tr>
+                <tr>
+                    <td style="font-weight: bold;">Category:</td>
+                    <td>${category}</td>
+                </tr>
+                <tr>
+                    <td style="font-weight: bold;">Budget Range:</td>
+                    <td>${budget || 'Not specified'}</td>
+                </tr>
+                <tr>
+                    <td style="font-weight: bold;">Deadline Date:</td>
+                    <td>${deadline}</td>
+                </tr>
+                <tr style="background-color: #F8FAFC;">
+                    <th colspan="2" style="text-align: left; font-size: 1.1em; color: #0B1F3B; padding: 10px;">Contact Information</th>
+                </tr>
+                <tr>
+                    <td style="font-weight: bold;">Full Name:</td>
+                    <td>${fullname}</td>
+                </tr>
+                <tr>
+                    <td style="font-weight: bold;">Company Name:</td>
+                    <td>${company}</td>
+                </tr>
+                <tr>
+                    <td style="font-weight: bold;">Email:</td>
+                    <td><a href="mailto:${email}">${email}</a></td>
+                </tr>
+                <tr>
+                    <td style="font-weight: bold;">Phone:</td>
+                    <td>${phone}</td>
+                </tr>
+                <tr>
+                    <td style="font-weight: bold;">Preferred Contact:</td>
+                    <td>${preferred_contact}</td>
+                </tr>
+            </table>
+
+            <h3>Detailed Proposal Description</h3>
+            <div style="background-color: #F8FAFC; border: 1px solid #E2E8F0; padding: 15px; border-radius: 4px; white-space: pre-wrap; font-family: sans-serif; line-height: 1.5;">
+${description}
+            </div>
+
+            <p style="margin-top: 20px; font-size: 0.85em; color: #718096;">
+                This email was auto-generated by the Tender Portal. The uploaded document is attached.
+            </p>
+        `;
+
+        const mailTransporter = await getTransporter();
+        const mailOptions = {
+            from: `"${company} via Dola Group Tender Portal" <${process.env.SMTP_USER || 'tenders@dolagroup.info'}>`,
+            to: process.env.RECEIVER_EMAIL || 'tenders@dolagroup.info',
+            subject: `[TENDER SUBMISSION] ${title} - ${refCode}`,
+            html: emailHTML,
+            attachments: [
+                {
+                    filename: req.file.originalname,
+                    content: req.file.buffer
+                }
+            ],
+            replyTo: email
+        };
+
+        // Send email to procurement team
+        const info = await mailTransporter.sendMail(mailOptions);
+        console.log(`[Procurement Email Sent] Message ID: ${info.messageId}`);
+        
+        // If Ethereal test account, print preview URL in terminal
+        if (nodemailer.getTestMessageUrl(info)) {
+            console.log(`[Preview Procurement Email] URL: ${nodemailer.getTestMessageUrl(info)}`);
+        }
+
+        // Send confirmation receipt email to the applicant
+        try {
+            const confirmationHTML = `
+                <h2>Tender Submission Confirmation</h2>
+                <p>Dear ${fullname},</p>
+                <p>Thank you for submitting your tender proposal. We have successfully received your proposal files and registered your submission.</p>
+                
+                <p><strong>Submission Summary:</strong></p>
+                <table border="1" cellpadding="6" cellspacing="0" style="border-collapse: collapse; border-color: #E2E8F0; width: 100%; max-width: 600px;">
+                    <tr>
+                        <td style="width: 35%; font-weight: bold; background-color: #F8FAFC;">Reference Number:</td>
+                        <td style="font-family: monospace; font-weight: bold; color: #0B1F3B;">${refCode}</td>
+                    </tr>
+                    <tr>
+                        <td style="font-weight: bold; background-color: #F8FAFC;">Tender Title:</td>
+                        <td>${title}</td>
+                    </tr>
+                    <tr>
+                        <td style="font-weight: bold; background-color: #F8FAFC;">Category:</td>
+                        <td>${category}</td>
+                    </tr>
+                    <tr>
+                        <td style="font-weight: bold; background-color: #F8FAFC;">Deadline Date:</td>
+                        <td>${deadline}</td>
+                    </tr>
+                    <tr>
+                        <td style="font-weight: bold; background-color: #F8FAFC;">Uploaded Document:</td>
+                        <td>${req.file.originalname}</td>
+                    </tr>
+                </table>
+
+                <p style="margin-top: 20px;">
+                    Our procurement review team will evaluate your proposal and get in touch with you using your preferred contact method (<strong>${preferred_contact}</strong>).
+                </p>
+                
+                <br>
+                <p>Best regards,<br><strong>Dola Group Ltd</strong></p>
+            `;
+
+            const confirmationOptions = {
+                from: `"Dola Group" <${process.env.SMTP_USER || 'tenders@dolagroup.info'}>`,
+                to: email,
+                subject: `[Tender Submission] Confirmation Receipt - ${title} [${refCode}]`,
+                html: confirmationHTML,
+                attachments: [
+                    {
+                        filename: req.file.originalname,
+                        content: req.file.buffer
+                    }
+                ]
+            };
+
+            const confirmationInfo = await mailTransporter.sendMail(confirmationOptions);
+            console.log(`[Applicant Confirmation Email Sent] Message ID: ${confirmationInfo.messageId}`);
+            if (nodemailer.getTestMessageUrl(confirmationInfo)) {
+                console.log(`[Preview Confirmation Email] URL: ${nodemailer.getTestMessageUrl(confirmationInfo)}`);
+            }
+        } catch (confirmErr) {
+            // Log but don't fail the primary transaction if the applicant's confirmation bounces
+            console.error('Failed to send confirmation email to applicant:', confirmErr);
+        }
+
+        // Return successful response to frontend
+        return res.status(200).json({
+            success: true,
+            reference: refCode,
+            message: 'Tender proposal submitted and email sent.'
+        });
+
+    } catch (err) {
+        console.error('SMTP Processing Error:', err);
+        return res.status(500).json({
+            success: false,
+            message: `Internal Server Error during email transmission: ${err.message}`
+        });
+    }
+});
+
+// Global Error Handler for Multer upload issues
+app.use((err, req, res, next) => {
+    if (err instanceof multer.MulterError) {
+        if (err.code === 'LIMIT_FILE_SIZE') {
+            return res.status(400).json({ success: false, message: 'The uploaded file exceeds the 10MB limit.' });
+        }
+        return res.status(400).json({ success: false, message: `Upload error: ${err.message}` });
+    }
+    if (err) {
+        return res.status(400).json({ success: false, message: err.message });
+    }
+    next();
+});
+
+// Start listening
+if (!process.env.VERCEL) {
+    app.listen(PORT, () => {
+        console.log(`==================================================`);
+        console.log(`Tender Submission Portal listening on http://localhost:${PORT}`);
+        console.log(`Press Ctrl+C to terminate server.`);
+        console.log(`==================================================`);
+    });
+}
+
+module.exports = app;

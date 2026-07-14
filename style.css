@@ -1,26 +1,26 @@
 /* Theme Tokens & Variables */
 :root {
-    --color-primary: #0B1F3B;      /* Deep Navy */
-    --color-primary-hover: #16325B;
-    --color-primary-light: #E7ECF3;
-    --color-bg: #F4F6F8;           /* Soft Gray */
+    --color-primary: #1E3A8A;      /* Deep Modern Blue/Navy */
+    --color-primary-hover: #1D4ED8;
+    --color-primary-light: #EFF6FF;
+    --color-bg: #F8FAFC;           /* Soft Modern Slate */
     --color-card: #FFFFFF;
-    --color-text: #2D3748;
-    --color-text-muted: #718096;
-    --color-border: #CBD5E0;
-    --color-border-focus: #4A5568;
+    --color-text: #0F172A;         /* Slate 900 */
+    --color-text-muted: #64748B;   /* Slate 500 */
+    --color-border: #E2E8F0;       /* Slate 200 */
+    --color-border-focus: #3B82F6; /* Blue 500 */
     
-    --color-error: #C53030;
-    --color-error-bg: #FFF5F5;
-    --color-error-border: #FEB2B2;
+    --color-error: #DC2626;        /* Red 600 */
+    --color-error-bg: #FEF2F2;     /* Red 50 */
+    --color-error-border: #FCA5A5; /* Red 300 */
     
-    --color-success: #2F855A;
-    --color-success-bg: #F0FFF4;
-    --color-success-border: #9AE6B4;
+    --color-success: #059669;      /* Emerald 600 */
+    --color-success-bg: #ECFDF5;   /* Emerald 50 */
+    --color-success-border: #A7F3D0; /* Emerald 200 */
     
     --font-stack: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    --border-radius: 6px;
-    --transition-speed: 0.18s;
+    --border-radius: 10px;         /* Modern rounded layout */
+    --transition-speed: 0.2s;
 }
 
 /* Reset & Base Styles */
@@ -96,7 +96,7 @@ body {
     border: 1px solid #E2E8F0;
     border-radius: var(--border-radius);
     padding: 40px;
-    box-shadow: 0 4px 12px rgba(11, 31, 59, 0.03), 0 1px 3px rgba(0, 0, 0, 0.02);
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.03), 0 1px 3px rgba(0, 0, 0, 0.02);
 }
 
 .form-header {
@@ -523,7 +523,7 @@ input.field-error, select.field-error, textarea.field-error {
     background-color: var(--color-primary);
     color: #E2E8F0;
     padding: 30px 20px;
-    border-top: 1px solid #162D4E;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
     font-size: 0.85rem;
 }
 
