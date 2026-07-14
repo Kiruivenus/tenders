@@ -610,7 +610,7 @@ input.field-error, select.field-error, textarea.field-error {
     border: 1px solid #BFDBFE;
     border-radius: var(--border-radius);
     padding: 12px 18px;
-    margin-bottom: 24px;
+    margin-top: 24px;
     gap: 12px;
 }
 
