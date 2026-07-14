@@ -7,15 +7,39 @@ const crypto = require('crypto');
 require('dotenv').config();
 
 // Initialize local storage directories for file uploads and audit logs
-const UPLOADS_DIR = path.join(__dirname, 'uploads');
-const LOGS_DIR = path.join(__dirname, 'logs');
+const os = require('os');
 
-if (!fs.existsSync(UPLOADS_DIR)) {
-    fs.mkdirSync(UPLOADS_DIR, { recursive: true });
+// Determine writeable folders for uploads/logs (Serverless environments have read-only filesystems except for /tmp)
+let UPLOADS_DIR = path.join(__dirname, 'uploads');
+let LOGS_DIR = path.join(__dirname, 'logs');
+
+function ensureDirectories() {
+    try {
+        if (!fs.existsSync(UPLOADS_DIR)) {
+            fs.mkdirSync(UPLOADS_DIR, { recursive: true });
+        }
+    } catch (e) {
+        console.warn(`[System warning] Unable to write uploads folder under project directory. Falling back to OS temp directory.`);
+        UPLOADS_DIR = path.join(os.tmpdir(), 'tenders-uploads');
+        if (!fs.existsSync(UPLOADS_DIR)) {
+            fs.mkdirSync(UPLOADS_DIR, { recursive: true });
+        }
+    }
+
+    try {
+        if (!fs.existsSync(LOGS_DIR)) {
+            fs.mkdirSync(LOGS_DIR, { recursive: true });
+        }
+    } catch (e) {
+        console.warn(`[System warning] Unable to write logs folder under project directory. Falling back to OS temp directory.`);
+        LOGS_DIR = path.join(os.tmpdir(), 'tenders-logs');
+        if (!fs.existsSync(LOGS_DIR)) {
+            fs.mkdirSync(LOGS_DIR, { recursive: true });
+        }
+    }
 }
-if (!fs.existsSync(LOGS_DIR)) {
-    fs.mkdirSync(LOGS_DIR, { recursive: true });
-}
+
+ensureDirectories();
 
 // Generate or fetch secret token for HMAC signed download links
 const API_SECRET = process.env.API_SECRET || crypto.randomBytes(32).toString('hex');
