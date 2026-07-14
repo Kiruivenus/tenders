@@ -68,27 +68,11 @@
                         </div>
                     </div>
 
-                    <!-- Row: Tender Title & Category Dropdown -->
-                    <div class="form-row">
-                        <div class="form-group col-8">
-                            <label for="tender_title">Tender Title <span class="required-indicator">*</span></label>
-                            <input type="text" id="tender_title" placeholder="e.g. Supply of Data Center Hardware Infrastructure" required>
-                            <div class="error-message" id="error-tender_title"></div>
-                        </div>
-                        <div class="form-group col-4">
-                            <label for="tender_category">Tender Category <span class="required-indicator">*</span></label>
-                            <div class="select-wrapper">
-                                <select id="tender_category" required>
-                                    <option value="" disabled selected>Choose a category...</option>
-                                    <option value="IT">IT</option>
-                                    <option value="Construction">Construction</option>
-                                    <option value="Procurement">Procurement</option>
-                                    <option value="Services">Services</option>
-                                    <option value="Other">Other</option>
-                                </select>
-                            </div>
-                            <div class="error-message" id="error-tender_category"></div>
-                        </div>
+                    <!-- Row: Tender Title -->
+                    <div class="form-group">
+                        <label for="tender_title">Tender Title <span class="required-indicator">*</span></label>
+                        <input type="text" id="tender_title" placeholder="e.g. Supply of Data Center Hardware Infrastructure" required>
+                        <div class="error-message" id="error-tender_title"></div>
                     </div>
 
                     <!-- Row: Description textarea -->
@@ -96,53 +80,6 @@
                         <label for="tender_description">Detailed Description <span class="required-indicator">*</span></label>
                         <textarea id="tender_description" rows="5" placeholder="Explain which tender you are interested in, project details, and any additional information..." required></textarea>
                         <div class="error-message" id="error-tender_description"></div>
-                    </div>
-
-                    <!-- Live Email Preview Card -->
-                    <div class="preview-card">
-                        <div class="preview-header">
-                            <h3 style="font-size: 1rem; font-weight: 700; color: var(--color-primary); margin-bottom: 4px;">Request Email Live Preview</h3>
-                            <p style="font-size: 0.825rem; color: var(--color-text-muted);">This preview updates in real time as you complete the form.</p>
-                        </div>
-                        <div class="preview-field">
-                            <strong>Recipient:</strong> <span style="font-family: monospace; font-weight: 600;">tenders@dolagroup.info</span>
-                        </div>
-                        <div class="preview-field">
-                            <strong>Subject:</strong> <span id="preview-subject" style="font-family: monospace; font-weight: 600;">Request for Tender Application Form – [Tender Title]</span>
-                        </div>
-                        <div style="margin-top: 12px; margin-bottom: 4px; font-size: 0.875rem; font-weight: 600; color: #2D3748;">Email Body:</div>
-                        <div class="preview-body-container" id="preview-body">Dear Dola Group Procurement Team,
-
-I would like to request the official tender application form for the following tender.
-
-Tender Title:
-[Title]
-
-Category:
-[Category]
-
-Applicant:
-[Applicant Name]
-
-Company:
-[Company]
-
-Email:
-[Applicant Email]
-
-Phone:
-[Phone]
-
-Description:
-[Description]
-
-Kindly send me the official application form together with any relevant tender documentation.
-
-Thank you.
-
-Kind regards,
-
-[Applicant Name]</div>
                     </div>
 
                     <!-- Submit action button -->

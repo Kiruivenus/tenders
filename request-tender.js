@@ -5,11 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const emailAddress = document.getElementById('email_address');
     const phoneNumber = document.getElementById('phone_number');
     const tenderTitle = document.getElementById('tender_title');
-    const tenderCategory = document.getElementById('tender_category');
     const tenderDescription = document.getElementById('tender_description');
-    
-    const previewSubject = document.getElementById('preview-subject');
-    const previewBody = document.getElementById('preview-body');
     const btnOpenEmail = document.getElementById('btn-open-email');
     const statusMessage = document.getElementById('status-message');
 
@@ -23,7 +19,6 @@ document.addEventListener('DOMContentLoaded', () => {
         { el: emailAddress, id: 'email_address', req: true, val: (val) => emailRegex.test(val), errText: 'Please enter a valid email address.' },
         { el: phoneNumber, id: 'phone_number', req: false },
         { el: tenderTitle, id: 'tender_title', req: true },
-        { el: tenderCategory, id: 'tender_category', req: true },
         { el: tenderDescription, id: 'tender_description', req: true }
     ];
 
@@ -47,26 +42,20 @@ document.addEventListener('DOMContentLoaded', () => {
         return isFormValid;
     }
 
-    function updatePreview() {
-        const nameVal = applicantName.value.trim() || '[Applicant Name]';
-        const companyVal = companyName.value.trim() || '[Company]';
-        const emailVal = emailAddress.value.trim() || '[Applicant Email]';
-        const phoneVal = phoneNumber.value.trim() || '[Phone]';
-        const titleVal = tenderTitle.value.trim() || '[Tender Title]';
-        const categoryVal = tenderCategory.value || '[Tender Category]';
-        const descVal = tenderDescription.value.trim() || '[Description]';
-
-        previewSubject.textContent = `Request for Tender Application Form – ${tenderTitle.value.trim() || '[Tender Title]'}`;
+    function generateEmailBody() {
+        const nameVal = applicantName.value.trim();
+        const companyVal = companyName.value.trim();
+        const emailVal = emailAddress.value.trim();
+        const phoneVal = phoneNumber.value.trim();
+        const titleVal = tenderTitle.value.trim();
+        const descVal = tenderDescription.value.trim();
         
-        const bodyContent = `Dear Dola Group Procurement Team,
+        return `Dear Dola Group Procurement Team,
 
 I would like to request the official tender application form for the following tender.
 
 Tender Title:
 ${titleVal}
-
-Category:
-${categoryVal}
 
 Applicant:
 ${nameVal}
@@ -90,9 +79,6 @@ Thank you.
 Kind regards,
 
 ${nameVal}`;
-
-        previewBody.textContent = bodyContent;
-        return bodyContent;
     }
 
     // Bind real-time inputs
@@ -113,15 +99,7 @@ ${nameVal}`;
             }
             
             validateForm();
-            updatePreview();
         });
-        
-        if (field.el.tagName === 'SELECT') {
-            field.el.addEventListener('change', () => {
-                validateForm();
-                updatePreview();
-            });
-        }
     });
 
     // Handle form submit and launch default client
@@ -139,7 +117,7 @@ ${nameVal}`;
 
         try {
             const subject = `Request for Tender Application Form – ${tenderTitle.value.trim()}`;
-            const body = updatePreview();
+            const body = generateEmailBody();
             const mailtoUrl = `mailto:tenders@dolagroup.info?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
             
             // Open user's default app
