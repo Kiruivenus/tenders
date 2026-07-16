@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Success Summary Displays
     const displayEmail = document.getElementById('success-email-display');
-    const summaryTitle = document.getElementById('summary-title');
+
     const summaryRef = document.getElementById('summary-ref');
     const summaryCategory = document.getElementById('summary-category');
 
@@ -80,10 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        if (id === 'title' && value.length < 8) {
-            showError(input, 'Tender title should be at least 8 characters long.');
-            return false;
-        }
+
 
         if (id === 'description' && value.length < 30) {
             showError(input, 'Please provide a more detailed description (minimum 30 characters).');
@@ -219,7 +216,7 @@ document.addEventListener('DOMContentLoaded', () => {
         .then(data => {
             // Success response handling
             displayEmail.textContent = formData.get('email');
-            summaryTitle.textContent = formData.get('title');
+
             
             // Join checked categories as comma-separated string
             const checkedCats = Array.from(tenderForm.querySelectorAll('input[name="category"]:checked'))

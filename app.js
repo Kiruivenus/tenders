@@ -353,10 +353,7 @@ function getProcurementHtml(vars) {
                   <td style="padding: 10px 16px; font-size: 13px; font-weight: 600; color: #64748b; width: 40%; border-bottom: 1px solid #f1f5f9;">Reference ID</td>
                   <td style="padding: 10px 16px; font-size: 13px; font-family: monospace; font-weight: 700; color: #0f172a; border-bottom: 1px solid #f1f5f9;">${vars.refCode}</td>
                 </tr>
-                <tr>
-                  <td style="padding: 10px 16px; font-size: 13px; font-weight: 600; color: #64748b; border-bottom: 1px solid #f1f5f9;">Tender Title</td>
-                  <td style="padding: 10px 16px; font-size: 13px; color: #0f172a; border-bottom: 1px solid #f1f5f9;">${vars.title}</td>
-                </tr>
+
                 <tr>
                   <td style="padding: 10px 16px; font-size: 13px; font-weight: 600; color: #64748b; border-bottom: 1px solid #f1f5f9;">Category</td>
                   <td style="padding: 10px 16px; font-size: 13px; color: #0f172a; border-bottom: 1px solid #f1f5f9;">${vars.category}</td>
@@ -415,7 +412,6 @@ A new tender proposal has been registered on the Dola Group Procurement Portal.
 TENDER SUMMARY
 --------------------------------------------------
 Reference ID: ${vars.refCode}
-Tender Title: ${vars.title}
 Category: ${vars.category}
 Budget Range: ${vars.budget}
 Applicant Name: ${vars.fullname}
@@ -493,10 +489,7 @@ function getApplicantHtml(vars) {
                   <td style="padding: 10px 16px; font-size: 13px; font-weight: 600; color: #64748b; width: 40%; border-bottom: 1px solid #f1f5f9;">Reference Number</td>
                   <td style="padding: 10px 16px; font-size: 13px; font-family: monospace; font-weight: 700; color: #0f172a; border-bottom: 1px solid #f1f5f9;">${vars.refCode}</td>
                 </tr>
-                <tr>
-                  <td style="padding: 10px 16px; font-size: 13px; font-weight: 600; color: #64748b; border-bottom: 1px solid #f1f5f9;">Tender Title</td>
-                  <td style="padding: 10px 16px; font-size: 13px; color: #0f172a; border-bottom: 1px solid #f1f5f9;">${vars.title}</td>
-                </tr>
+
                 <tr>
                   <td style="padding: 10px 16px; font-size: 13px; font-weight: 600; color: #64748b; border-bottom: 1px solid #f1f5f9;">Category</td>
                   <td style="padding: 10px 16px; font-size: 13px; color: #0f172a; border-bottom: 1px solid #f1f5f9;">${vars.category}</td>
@@ -556,7 +549,6 @@ We have successfully received your tender proposal. Your submission has been sec
 SUBMISSION SUMMARY
 --------------------------------------------------
 Reference Number: ${vars.refCode}
-Tender Title: ${vars.title}
 Category: ${vars.category}
 Submission Date: ${vars.submissionDate}
 Status: Successfully Received
@@ -591,7 +583,6 @@ app.post('/submit-tender', upload.none(), async (req, res) => {
             company,
             email,
             phone,
-            title,
             category,
             budget,
             description
@@ -606,7 +597,7 @@ app.post('/submit-tender', upload.none(), async (req, res) => {
         }
 
         // Basic server-side validations
-        if (!fullname || !company || !email || !phone || !title || !formattedCategory || !description) {
+        if (!fullname || !company || !email || !phone || !formattedCategory || !description) {
             return res.status(400).json({ success: false, message: 'All required fields must be filled.' });
         }
 
@@ -626,7 +617,6 @@ app.post('/submit-tender', upload.none(), async (req, res) => {
             company: escapeHtml(company),
             email: escapeHtml(email),
             phone: escapeHtml(phone),
-            title: escapeHtml(title),
             category: escapeHtml(formattedCategory),
             budget: budget ? escapeHtml(budget) : 'Not specified',
             description: escapeHtml(description),
@@ -654,7 +644,7 @@ app.post('/submit-tender', upload.none(), async (req, res) => {
             from: `"${company} via Dola Group Tender Portal" <${process.env.SMTP_USER}>`,
             to: process.env.RECEIVER_EMAIL,
             replyTo: email,
-            subject: `Tender Submission Receipt - ${title} [${refCode}]`,
+            subject: `Tender Submission Receipt [${refCode}]`,
             html: procurementHtml,
             text: procurementText,
             headers: {
@@ -687,7 +677,7 @@ app.post('/submit-tender', upload.none(), async (req, res) => {
             const confirmationOptions = {
                 from: `"Dola Group" <${process.env.SMTP_USER}>`,
                 to: email,
-                subject: `Tender Submission Confirmation - ${title} [${refCode}]`,
+                subject: `Tender Submission Confirmation [${refCode}]`,
                 html: applicantHtml,
                 text: applicantText,
                 headers: {
